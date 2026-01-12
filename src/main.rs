@@ -21,12 +21,10 @@ fn run_ts_scaffold(args: Args) {
         .interact()
         .unwrap();
 
-    if use_strict {
-        if let Some(compiler_options) = tsconfig.get_mut("compilerOptions") {
-            compiler_options["strict"] = json!(true);
-            compiler_options["noUncheckedIndexedAccess"] = json!(true);
-            compiler_options["noImplicitOverride"] = json!(true);
-        }
+    if use_strict && let Some(compiler_options) = tsconfig.get_mut("compilerOptions") {
+        compiler_options["strict"] = json!(true);
+        compiler_options["noUncheckedIndexedAccess"] = json!(true);
+        compiler_options["noImplicitOverride"] = json!(true);
     }
 
     let tsconfig_path = format!("{}/tsconfig.json", args.project_name);
