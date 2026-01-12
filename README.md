@@ -1,4 +1,4 @@
-# ts-scaffold
+# TS-scaffold CLI
 
 A command-line tool for scaffolding TypeScript projects written in Rust. Creates new TypeScript projects with customizable configuration including tsconfig.json, project structure, and optional strict mode settings.
 
