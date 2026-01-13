@@ -80,6 +80,51 @@ fn check_git(args: &Args) {
     }
 }
 
+/// Create the `tsconfig.json` file on the project folder with the correspondant values.
+///
+/// # Arguments
+///
+/// * `args` - A reference to the command-line arguments containing the project name
+/// * `tsconfig` - A reference to the tsconfig.json JSON value
+fn create_tsconfig_file(args: &Args, tsconfig: &Value) {
+    let tsconfig_path = format!("{}/tsconfig.json", args.project_name);
+
+    let tsconfig_str =
+        serde_json::to_string_pretty(&tsconfig).expect("Failed to serialize tsconfig.json");
+
+    fs::write(&tsconfig_path, tsconfig_str).expect("Failed to write tsconfig.json");
+}
+
+/// Create the `package.json` file on the project folder with the correspondant values.
+///
+/// # Arguments
+///
+/// * `args` - A reference to the command-line arguments containing the project name
+/// * `package_json` - A reference to the package.json JSON value
+fn create_package_file(args: &Args, package_json: &Value) {
+    let package_json_path = format!("{}/package.json", args.project_name);
+
+    let package_json_str =
+        serde_json::to_string_pretty(&package_json).expect("Failed to serialize package.json");
+
+    fs::write(&package_json_path, package_json_str).expect("Failed to write package.json");
+}
+
+/// Create the `main.ts` file on the source folder inside the project.
+/// In case that the folder already exists, we'll skip this step
+///
+/// # Arguments
+///
+/// * `args` - A reference to the command-line arguments containing the project name
+fn create_source_file(args: &Args) {
+    let src_path = format!("{}/src", args.project_name);
+    if !Path::new(&src_path).exists() {
+        fs::create_dir(src_path).expect("Failed to create source directory");
+        let main_path = format!("{}/src/main.ts", args.project_name);
+        fs::write(&main_path, TS_MAIN_TEMPLATE).expect("Failed to write main.ts");
+    }
+}
+
 /// Runs the TypeScript scaffolding process.
 ///
 /// Creates a new TypeScript project with the specified configuration,
@@ -100,21 +145,9 @@ fn run_ts_scaffold(args: Args) {
     check_git(&args);
     check_strict(&mut tsconfig);
 
-    // Paths for files to create
-    let tsconfig_path = format!("{}/tsconfig.json", args.project_name);
-    let package_json_path = format!("{}/package.json", args.project_name);
-    let main_path = format!("{}/main.ts", args.project_name);
-
-    // serialize files that are in JSON
-    let tsconfig_str =
-        serde_json::to_string_pretty(&tsconfig).expect("Failed to serialize tsconfig.json");
-    let package_json_str =
-        serde_json::to_string_pretty(&package_json).expect("Failed to serialize package.json");
-
-    // Write all the files on the project folder
-    fs::write(&tsconfig_path, tsconfig_str).expect("Failed to write tsconfig.json");
-    fs::write(&package_json_path, package_json_str).expect("Failed to write package.json");
-    fs::write(&main_path, TS_MAIN_TEMPLATE).expect("Failed to write main.ts");
+    create_tsconfig_file(&args, &tsconfig);
+    create_package_file(&args, &package_json);
+    create_source_file(&args);
 }
 
 fn main() {
