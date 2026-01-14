@@ -18,7 +18,7 @@ use std::{fs, path::Path, process::Command};
 ///
 /// * `package_json` - A mutable reference to the package.json JSON value
 /// * `args` - The command-line arguments containing the project name
-pub fn init_package_json(package_json: &mut Value, args: &Args) {
+fn init_package_json(package_json: &mut Value, args: &Args) {
     package_json["name"] = json!(args.project_name);
 }
 
@@ -32,7 +32,7 @@ pub fn init_package_json(package_json: &mut Value, args: &Args) {
 /// # Arguments
 ///
 /// * `tsconfig` - A mutable reference to the tsconfig JSON value
-pub fn check_strict(tsconfig: &mut Value) {
+fn check_strict(tsconfig: &mut Value) {
     let use_strict = Confirm::new()
         .with_prompt("Use strict TypeScript mode?")
         .interact()
